@@ -1,0 +1,11 @@
+en:
+  name_error: 'Your name must not be empty and starts with first upcase letter'
+  age_error: 'Your Age must be greeter then 23 and lower then 90'
+  login_error_empty: 'Login must present'
+  login_error_min: 'Login must be longer then 4 symbols'
+  login_error_max: 'Login must be shorter then 20 symbols'
+  login_error_exists: 'Such account is already exists' 
+  password_error_empty: 'Password must present'
+  password_error_min: 'Password must be longer then 6 symbols'
+  password_error_max: 'Password must be shorter then 30 symbols'
+  
