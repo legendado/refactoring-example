@@ -4,6 +4,10 @@ class Account < Struct.new(:name, :age, :login, :password)
     @cards = []
   end
 
+  def equal? data
+    login == data[:login] && password == data[:password]
+  end
+
   def create_card
   end
 
