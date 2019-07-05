@@ -8,7 +8,10 @@ module CardsAction
   }.freeze
 
   def create_card
-    add_new_card get_type
+    type = get_type
+    return if type == 'exit'
+
+    add_new_card type
     update_database
   end
 
@@ -17,10 +20,47 @@ module CardsAction
   end
 
   def destroy_card
+    return show_error_cards unless cards.any?
+
+    index = get_index
+    return if index == 'exit'
+
+    delete_card index.to_i if accept? index.to_i
   end
 
   private
 
+  def accept? index
+    puts I18n.t 'output.accept', number: self.cards[index - 1].number
+    gets.chomp == 'y'
+  end
+
+  def get_index
+    loop do
+      index = set_index
+      break index if index.to_i > 0 || index == 'exit'
+      show_number_error
+    end
+  end
+
+  def set_index
+    puts I18n.t 'output.want_delete'
+    self.cards.each_with_index do |card, index|
+      puts I18n.t('output.deleting_card', number: card.number, type: card.type, index: index + 1)
+    end
+    puts I18n.t 'output.exit'
+    gets.chomp
+  end
+
+  def show_number_error
+    puts I18n.t 'errors.wrong_number'
+  end
+
+  def delete_card index
+    self.cards.delete_at(index - 1)
+    update_database
+  end   
+    
   def update_database
     save_accounts updated_accounts      
   end
@@ -65,7 +105,7 @@ module CardsAction
   end
 
   def print_cards
-    cards.each { |card| puts("- #{card.number}, #{card.type}") }
+    cards.each { |card| puts(I18n.t('output.card', number: card.number, type: card.type)) }
   end
 
   def show_error_cards

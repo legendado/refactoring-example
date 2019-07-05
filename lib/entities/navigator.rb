@@ -78,7 +78,7 @@ class Navigator
     case command
     when ACCOUNT_COMMANDS[:SC] then @current_account.show_cards
     when ACCOUNT_COMMANDS[:CC] then @current_account.create_card
-    # when ACCOUNT_COMMANDS[:DC] then @current_account.destroy_card
+    when ACCOUNT_COMMANDS[:DC] then @current_account.destroy_card
     # when ACCOUNT_COMMANDS[:PM] then @current_account.destroy_card
     # when ACCOUNT_COMMANDS[:WM] then @current_account.destroy_card
     # when ACCOUNT_COMMANDS[:SM] then @current_account.destroy_card
