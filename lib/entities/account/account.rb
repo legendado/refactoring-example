@@ -1,4 +1,8 @@
 class Account < Struct.new(:name, :age, :login, :password)
+  include CardsAction
+
+  attr_accessor :cards
+
   def initialize(args)
     super(args[:name], args[:age], args[:login], args[:password])
     @cards = []
@@ -6,14 +10,5 @@ class Account < Struct.new(:name, :age, :login, :password)
 
   def equal? data
     login == data[:login] && password == data[:password]
-  end
-
-  def create_card
-  end
-
-  def show_cards
-  end
-
-  def destroy_card
-  end
+  end  
 end

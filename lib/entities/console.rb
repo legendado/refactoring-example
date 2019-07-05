@@ -30,4 +30,13 @@ module Console
     puts I18n.t 'enter.new_account'
     gets.chomp
   end
+
+  def menu name
+    puts I18n.t('account.main_menu', name: name)
+    gets.chomp
+  end
+
+  def wrong_command
+    puts I18n.t 'account.wrong_command'
+  end
 end

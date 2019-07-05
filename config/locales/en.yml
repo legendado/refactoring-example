@@ -2,7 +2,24 @@ en:
   greeting: "Hello, we are RubyG bank!
   \n- If you want to create account - press `create`
   \n- If you want to load account - press `load`
-  \n- If you want to exit - press `exit`"
+  \n- If you want to exit - press `exit`"    
+  account:
+    create_card: "You could create one of 3 card types
+      \n- Usual card. 2% tax on card INCOME. 20$ tax on SENDING money from this card. 5% tax on WITHDRAWING money. For creation this card - press `usual`
+      \n- Capitalist card. 10$ tax on card INCOME. 10% tax on SENDING money from this card. 4$ tax on WITHDRAWING money. For creation this card - press `capitalist`
+      \n- Virtual card. 1$ tax on card INCOME. 1$ tax on SENDING money from this card. 12% tax on WITHDRAWING money. For creation this card - press `virtual`
+      \n- For exit - press `exit`"
+    main_menu: "\nWelcome, %{name}
+      \nIf you want to:
+      \n- show all cards - press SC
+      \n- create card - press CC
+      \n- destroy card - press DC
+      \n- put money on card - press PM
+      \n- withdraw money on card - press WM
+      \n- send money to another card  - press SM
+      \n- destroy account - press `DA`
+      \n- exit from account - press `exit`"
+    wrong_command: "Wrong command. Try again!\n"
   enter:
     name: 'Enter your name'
     age: 'Enter your age'
@@ -20,5 +37,7 @@ en:
     password_error_min: 'Password must be longer then 6 symbols'
     password_error_max: 'Password must be shorter then 30 symbols'
     account_finded: 'There is no account with given credentials'
+    cards: "There is no active cards!\n"
+    card_type: "Wrong card type. Try again!\n"
     
   

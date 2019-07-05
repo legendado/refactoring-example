@@ -13,7 +13,12 @@ class Navigator
   ACCOUNT_COMMANDS = {
     SC: 'SC',
     CC: 'CC',
-    DC: 'load'
+    DC: 'DC',
+    PM: 'PM',
+    WM: 'WM',
+    SM: 'SM',
+    DA: 'DA',
+    exit: 'exit'
   }.freeze
 
   YES = 'y'.freeze
@@ -59,13 +64,29 @@ class Navigator
   end
 
   def main_menu
-    puts 'main menu'
+    loop do
+      menu_navigator menu(@current_account.name)
+    end
   end
 
   def destroy_account
   end
 
   private
+
+  def menu_navigator command
+    case command
+    when ACCOUNT_COMMANDS[:SC] then @current_account.show_cards
+    when ACCOUNT_COMMANDS[:CC] then @current_account.create_card
+    # when ACCOUNT_COMMANDS[:DC] then @current_account.destroy_card
+    # when ACCOUNT_COMMANDS[:PM] then @current_account.destroy_card
+    # when ACCOUNT_COMMANDS[:WM] then @current_account.destroy_card
+    # when ACCOUNT_COMMANDS[:SM] then @current_account.destroy_card
+    # when ACCOUNT_COMMANDS[:DA] then @current_account.destroy_card
+    when ACCOUNT_COMMANDS[:exit] then exit
+    else wrong_command
+    end
+  end
 
   def show_account_error
     puts I18n.t 'errors.account_finded'
