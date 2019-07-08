@@ -1,8 +1,6 @@
 class Navigator
   include Validation
   include Database
-  # include Output
-  # include Money
   include Console
 
   START_COMMANDS = {
@@ -33,13 +31,14 @@ class Navigator
     when START_COMMANDS[:load] then load
     else exit
     end
-  end  
+  end
 
   def create
     loop do
       data = set_account_info
-      validate data 
+      validate data
       break @current_account = Account.new(data) if @errors.empty?
+
       show_errors
     end
     save
@@ -49,8 +48,10 @@ class Navigator
   def load
     loop do
       return create_first_account if accounts.none?
+
       account = find_account(set_credentials)
       break @current_account = account unless account.nil?
+
       show_account_error
     end
     main_menu
@@ -69,31 +70,47 @@ class Navigator
     end
   end
 
-  def destroy_account
+  def menu_navigator(command)
+    case command
+    when ACCOUNT_COMMANDS[:SC] then show_cards
+    when ACCOUNT_COMMANDS[:CC] then create_card
+    when ACCOUNT_COMMANDS[:DC] then destroy_card
+    when ACCOUNT_COMMANDS[:PM] then put_money
+    when ACCOUNT_COMMANDS[:WM] then withdraw_money
+    when ACCOUNT_COMMANDS[:DA] then destroy_account
+    when ACCOUNT_COMMANDS[:exit] then exit
+    else wrong_command
+    end
   end
 
   private
 
-  def menu_navigator command
-    case command
-    when ACCOUNT_COMMANDS[:SC] then @current_account.show_cards
-    when ACCOUNT_COMMANDS[:CC] then @current_account.create_card
-    when ACCOUNT_COMMANDS[:DC] then @current_account.destroy_card
-    # when ACCOUNT_COMMANDS[:PM] then @current_account.destroy_card
-    # when ACCOUNT_COMMANDS[:WM] then @current_account.destroy_card
-    # when ACCOUNT_COMMANDS[:SM] then @current_account.destroy_card
-    # when ACCOUNT_COMMANDS[:DA] then @current_account.destroy_card
-    when ACCOUNT_COMMANDS[:exit] then exit
-    else wrong_command
-    end
+  def destroy_account; end
+
+  def withdraw_money; end
+
+  def put_money
+    @current_account.put_money
+  end
+
+  def show_cards
+    @current_account.show_cards
+  end
+
+  def create_card
+    @current_account.create_card
+  end
+
+  def destroy_card
+    @current_account.destroy_card
   end
 
   def show_account_error
     puts I18n.t 'errors.account_finded'
   end
 
-  def find_account data
-    accounts.detect{ |account| account.equal? data }
+  def find_account(data)
+    accounts.detect { |account| account.equal? data }
   end
 
   def set_credentials
@@ -117,7 +134,7 @@ class Navigator
   end
 
   def show_errors
-    @errors.each { |error| puts error } 
+    @errors.each { |error| puts error }
     @errors = []
-  end  
+  end
 end

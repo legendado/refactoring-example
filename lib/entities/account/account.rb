@@ -1,5 +1,7 @@
 class Account < Struct.new(:name, :age, :login, :password)
+  include Helper
   include CardsAction
+  include Money
 
   attr_accessor :cards
 
@@ -8,7 +10,7 @@ class Account < Struct.new(:name, :age, :login, :password)
     @cards = []
   end
 
-  def equal? data
+  def equal?(data)
     login == data[:login] && password == data[:password]
-  end  
+  end
 end

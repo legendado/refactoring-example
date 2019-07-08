@@ -1,7 +1,14 @@
 class VirtualCard < Card
   def initialize
-    super
+    super(balance: 150.00)
     @type = 'virtual'
-    balance = 150.00
+  end
+
+  def put_tax
+    1
+  end
+
+  def withdraw_tax
+    0.88
   end
 end
