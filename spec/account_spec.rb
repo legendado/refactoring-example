@@ -375,7 +375,7 @@ RSpec.describe Navigator do
     context 'when commands used' do
       let(:undefined_command) { 'undefined' }
 
-      it 'calls specific methods on predefined commands', focus: true  do
+      it 'calls specific methods on predefined commands'  do
         current_subject.instance_variable_set(:@current_account, instance_double('Account', name: name))
         allow(current_subject).to receive(:exit)
 
@@ -440,7 +440,7 @@ RSpec.describe Navigator do
     end
   end
 
-  describe '#show_cards' do
+  describe '#show_cards', focus: true do
     let(:cards) { [{ number: 1234, type: 'a' }, { number: 5678, type: 'b' }] }
 
     it 'display cards if there are any' do

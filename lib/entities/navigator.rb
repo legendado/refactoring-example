@@ -66,22 +66,17 @@ class Navigator
 
   def main_menu
     loop do
-      command = menu(@current_account.name)
-      menu_navigator command
-      break if command == ACCOUNT_COMMANDS[:exit]
+      case menu(@current_account.name)
+      when ACCOUNT_COMMANDS[:SC] then show_cards
+      when ACCOUNT_COMMANDS[:CC] then create_card
+      when ACCOUNT_COMMANDS[:DC] then destroy_card
+      when ACCOUNT_COMMANDS[:PM] then put_money
+      when ACCOUNT_COMMANDS[:WM] then withdraw_money
+      when ACCOUNT_COMMANDS[:DA] then destroy_account
+      when ACCOUNT_COMMANDS[:exit] then break exit
+      else wrong_command
+      end
     end
-  end
-
-  def menu_navigator command
-    case command
-    when ACCOUNT_COMMANDS[:SC] then show_cards
-    when ACCOUNT_COMMANDS[:CC] then create_card
-    when ACCOUNT_COMMANDS[:DC] then destroy_card
-    when ACCOUNT_COMMANDS[:PM] then put_money
-    when ACCOUNT_COMMANDS[:WM] then withdraw_money
-    when ACCOUNT_COMMANDS[:DA] then destroy_account
-    else wrong_command
-    end    
   end
 
   private
