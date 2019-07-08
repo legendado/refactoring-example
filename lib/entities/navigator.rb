@@ -66,11 +66,13 @@ class Navigator
 
   def main_menu
     loop do
-      menu_navigator menu(@current_account.name)
+      command = menu(@current_account.name)
+      menu_navigator command
+      break if command == ACCOUNT_COMMANDS[:exit]
     end
   end
 
-  def menu_navigator(command)
+  def menu_navigator command
     case command
     when ACCOUNT_COMMANDS[:SC] then show_cards
     when ACCOUNT_COMMANDS[:CC] then create_card
@@ -78,9 +80,8 @@ class Navigator
     when ACCOUNT_COMMANDS[:PM] then put_money
     when ACCOUNT_COMMANDS[:WM] then withdraw_money
     when ACCOUNT_COMMANDS[:DA] then destroy_account
-    when ACCOUNT_COMMANDS[:exit] then exit
     else wrong_command
-    end
+    end    
   end
 
   private
@@ -109,8 +110,8 @@ class Navigator
     puts I18n.t 'errors.account_finded'
   end
 
-  def find_account(data)
-    accounts.detect { |account| account.equal? data }
+  def find_account data
+    accounts.detect { |account| account.login == data[:login] && account.password == data[:password] }
   end
 
   def set_credentials

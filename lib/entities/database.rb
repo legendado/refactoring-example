@@ -1,14 +1,14 @@
 module Database
-  private
-
-  PATH = 'accounts.yml'.freeze
+  def path file_path = 'accounts.yml'
+    file_path
+  end    
 
   def load_account
-    File.exist?(PATH) ? YAML.load_file(PATH) : []
+    File.exist?(path) ? YAML.load_file(path) : []
   end
 
   def save_accounts(accounts)
-    File.open(PATH, 'w') { |f| f.write accounts.to_yaml }
+    File.open(path, 'w') { |f| f.write accounts.to_yaml }
   end
 
   alias accounts load_account
