@@ -38,5 +38,5 @@ module Console
 
   def wrong_command
     puts I18n.t 'account.wrong_command'
-  end
+  end  
 end

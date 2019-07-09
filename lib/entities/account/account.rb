@@ -9,8 +9,4 @@ class Account < Struct.new(:name, :age, :login, :password)
     super(args[:name], args[:age], args[:login], args[:password])
     @cards = []
   end
-
-  # def equal? data
-  #   login == data[:login] && password == data[:password]
-  # end
 end

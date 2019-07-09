@@ -79,8 +79,6 @@ class Navigator
     end
   end
 
-  private
-
   def destroy_account; end
 
   def withdraw_money; end
@@ -100,6 +98,8 @@ class Navigator
   def destroy_card
     @current_account.destroy_card
   end
+
+  private
 
   def show_account_error
     puts I18n.t 'errors.account_finded'

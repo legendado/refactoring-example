@@ -1,4 +1,4 @@
-RSpec.describe Navigator do
+RSpec.describe Account do
   OVERRIDABLE_FILENAME = 'spec/fixtures/account.yml'.freeze
 
   COMMON_PHRASES = {
@@ -28,14 +28,15 @@ RSpec.describe Navigator do
   }.freeze
 
   # rubocop:disable Metrics/LineLength
+  CREATE_CARD_PHRASES = I18n.t 'account.create_card'
 
-  CREATE_CARD_PHRASES = [
-    'You could create one of 3 card types',
-    '- Usual card. 2% tax on card INCOME. 20$ tax on SENDING money from this card. 5% tax on WITHDRAWING money. For creation this card - press `usual`',
-    '- Capitalist card. 10$ tax on card INCOME. 10% tax on SENDING money from this card. 4$ tax on WITHDRAWING money. For creation this card - press `capitalist`',
-    '- Virtual card. 1$ tax on card INCOME. 1$ tax on SENDING money from this card. 12% tax on WITHDRAWING money. For creation this card - press `virtual`',
-    '- For exit - press `exit`'
-  ].freeze
+  # CREATE_CARD_PHRASES = [
+  #   'You could create one of 3 card types',
+  #   '- Usual card. 2% tax on card INCOME. 20$ tax on SENDING money from this card. 5% tax on WITHDRAWING money. For creation this card - press `usual`',
+  #   '- Capitalist card. 10$ tax on card INCOME. 10% tax on SENDING money from this card. 4$ tax on WITHDRAWING money. For creation this card - press `capitalist`',
+  #   '- Virtual card. 1$ tax on card INCOME. 1$ tax on SENDING money from this card. 12% tax on WITHDRAWING money. For creation this card - press `virtual`',
+  #   '- For exit - press `exit`'
+  # ].freeze
 
   # rubocop:enable Metrics/LineLength
 
@@ -69,7 +70,7 @@ RSpec.describe Navigator do
     tax_higher: 'Your tax is higher than input amount'
   }.freeze
 
-  # MAIN_OPERATIONS_TEXTS = I18n.t 'account.main_menu'
+  MAIN_OPERATIONS_TEXTS = I18n.t 'account.main_menu', name: name
 
   # MAIN_OPERATIONS_TEXTS = [
   #   'If you want to:',
@@ -97,9 +98,11 @@ RSpec.describe Navigator do
     }
   }.freeze
 
-  let(:current_subject) { described_class.new }
+  let(:current_subject) { Navigator.new }
+  let(:test_account) { described_class.new({name: 'Alex', age: '33', login: 'test1', password: '123456'}) }
+  let(:name) { 'Test' }
 
-  describe '#console' do
+  describe '#console', focus: true do
     context 'when correct method calling' do
       after do
         current_subject.console
@@ -131,7 +134,7 @@ RSpec.describe Navigator do
     end
   end
 
-  describe '#create' do
+  describe '#create', focus: true do
     let(:success_name_input) { 'Denis' }
     let(:success_age_input) { '72' }
     let(:success_login_input) { 'Denis' }
@@ -268,7 +271,7 @@ RSpec.describe Navigator do
     end
   end
 
-  describe '#load' do
+  describe '#load', focus: true do
     before do
       allow(current_subject).to receive(:loop).and_yield
     end
@@ -395,73 +398,78 @@ RSpec.describe Navigator do
     end
   end
 
-  describe '#destroy_account' do
-    let(:cancel_input) { 'sdfsdfs' }
-    let(:success_input) { 'y' }
-    let(:correct_login) { 'test' }
-    let(:fake_login) { 'test1' }
-    let(:fake_login2) { 'test2' }
-    let(:correct_account) { instance_double('Account', login: correct_login) }
-    let(:fake_account) { instance_double('Account', login: fake_login) }
-    let(:fake_account2) { instance_double('Account', login: fake_login2) }
-    let(:accounts) { [correct_account, fake_account, fake_account2] }
+  # describe '#destroy_account' do
+  #   let(:cancel_input) { 'sdfsdfs' }
+  #   let(:success_input) { 'y' }
+  #   let(:correct_login) { 'test' }
+  #   let(:fake_login) { 'test1' }
+  #   let(:fake_login2) { 'test2' }
+  #   let(:correct_account) { instance_double('Account', login: correct_login) }
+  #   let(:fake_account) { instance_double('Account', login: fake_login) }
+  #   let(:fake_account2) { instance_double('Account', login: fake_login2) }
+  #   let(:accounts) { [correct_account, fake_account, fake_account2] }
 
-    after do
-      File.delete(OVERRIDABLE_FILENAME) if File.exist?(OVERRIDABLE_FILENAME)
-    end
+  #   after do
+  #     File.delete(OVERRIDABLE_FILENAME) if File.exist?(OVERRIDABLE_FILENAME)
+  #   end
 
-    it 'with correct outout' do
-      expect(current_subject).to receive_message_chain(:gets, :chomp) {}
-      expect { current_subject.destroy_account }.to output(COMMON_PHRASES[:destroy_account]).to_stdout
-    end
+  #   it 'with correct outout' do
+  #     expect(current_subject).to receive_message_chain(:gets, :chomp) {}
+  #     expect { current_subject.destroy_account }.to output(COMMON_PHRASES[:destroy_account]).to_stdout
+  #   end
 
-    context 'when deleting' do
-      it 'deletes account if user inputs is y' do
-        expect(current_subject).to receive_message_chain(:gets, :chomp) { success_input }
-        expect(current_subject).to receive(:accounts) { accounts }
-        current_subject.instance_variable_set(:@file_path, OVERRIDABLE_FILENAME)
-        current_subject.instance_variable_set(:@current_account, instance_double('Account', login: correct_login))
+  #   context 'when deleting' do
+  #     it 'deletes account if user inputs is y' do
+  #       expect(current_subject).to receive_message_chain(:gets, :chomp) { success_input }
+  #       expect(current_subject).to receive(:accounts) { accounts }
+  #       current_subject.instance_variable_set(:@file_path, OVERRIDABLE_FILENAME)
+  #       current_subject.instance_variable_set(:@current_account, instance_double('Account', login: correct_login))
 
-        current_subject.destroy_account
+  #       current_subject.destroy_account
 
-        expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
-        file_accounts = YAML.load_file(OVERRIDABLE_FILENAME)
-        expect(file_accounts).to be_a Array
-        expect(file_accounts.size).to be 2
-      end
+  #       expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
+  #       file_accounts = YAML.load_file(OVERRIDABLE_FILENAME)
+  #       expect(file_accounts).to be_a Array
+  #       expect(file_accounts.size).to be 2
+  #     end
 
-      it 'doesnt delete account' do
-        expect(current_subject).to receive_message_chain(:gets, :chomp) { cancel_input }
+  #     it 'doesnt delete account' do
+  #       expect(current_subject).to receive_message_chain(:gets, :chomp) { cancel_input }
 
-        current_subject.destroy_account
+  #       current_subject.destroy_account
 
-        expect(File.exist?(OVERRIDABLE_FILENAME)).to be false
-      end
-    end
-  end
+  #       expect(File.exist?(OVERRIDABLE_FILENAME)).to be false
+  #     end
+  #   end
+  # end
 
   describe '#show_cards', focus: true do
-    let(:cards) { [{ number: 1234, type: 'a' }, { number: 5678, type: 'b' }] }
+    let(:cards) { [UsualCard.new, VirtualCard.new] }    
+
+    before do
+      test_account.instance_variable_set(:@cards, cards)
+    end
+
+    after { test_account.show_cards }
 
     it 'display cards if there are any' do
-      current_subject.instance_variable_set(:@current_account, instance_double('Account', card: cards))
-      cards.each { |card| expect(current_subject).to receive(:puts).with("- #{card[:number]}, #{card[:type]}") }
-      current_subject.show_cards
+      allow(test_account).to receive(:get_cards).and_return(cards)
+      expect(test_account).to receive(:show).with(cards)      
     end
 
     it 'outputs error if there are no active cards' do
-      current_subject.instance_variable_set(:@current_account, instance_double('Account', card: []))
-      expect(current_subject).to receive(:puts).with(ERROR_PHRASES[:no_active_cards])
-      current_subject.show_cards
+      test_account.instance_variable_set(:@cards, [])
+      expect(test_account).to receive(:puts).with(ERROR_PHRASES[:no_active_cards])
     end
   end
 
   describe '#create_card' do
+    let(:current_subject) { test_account }
+
     context 'with correct outout' do
       it do
-        CREATE_CARD_PHRASES.each { |phrase| expect(current_subject).to receive(:puts).with(phrase) }
-        current_subject.instance_variable_set(:@card, [])
-        current_subject.instance_variable_set(:@current_account, current_subject)
+        expect(current_subject).to receive(:puts).with(CREATE_CARD_PHRASES) 
+        current_subject.instance_variable_set(:@cards, [])
         allow(current_subject).to receive(:accounts).and_return([])
         allow(File).to receive(:open)
         expect(current_subject).to receive_message_chain(:gets, :chomp) { 'usual' }
@@ -472,8 +480,9 @@ RSpec.describe Navigator do
 
     context 'when correct card choose' do
       before do
-        allow(current_subject).to receive(:card).and_return([])
-        allow(current_subject).to receive(:accounts) { [current_subject] }
+        current_subject.instance_variable_set(:@cards, [])
+        allow(current_subject).to receive(:cards).and_return([])
+        allow(current_subject).to receive(:path).and_return(OVERRIDABLE_FILENAME)
         current_subject.instance_variable_set(:@file_path, OVERRIDABLE_FILENAME)
         current_subject.instance_variable_set(:@current_account, current_subject)
       end
@@ -483,16 +492,17 @@ RSpec.describe Navigator do
       end
 
       CARDS.each do |card_type, card_info|
-        it "create card with #{card_type} type" do
+        it "create card with #{card_type} type", no: true do
           expect(current_subject).to receive_message_chain(:gets, :chomp) { card_info[:type] }
 
           current_subject.create_card
 
           expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
           file_accounts = YAML.load_file(OVERRIDABLE_FILENAME)
-          expect(file_accounts.first.card.first[:type]).to eq card_info[:type]
-          expect(file_accounts.first.card.first[:balance]).to eq card_info[:balance]
-          expect(file_accounts.first.card.first[:number].length).to be 16
+          # binding.pry
+          expect(file_accounts.first.cards.type).to eq card_info[:type]
+          expect(file_accounts.first.card.balance).to eq card_info[:balance]
+          expect(file_accounts.first.card.number.length).to be 16
         end
       end
     end
