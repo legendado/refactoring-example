@@ -11,7 +11,7 @@ RSpec.describe Account do
     withdraw_amount: 'Input the amount of money you want to withdraw'
   }.freeze
 
-  HELLO_PHRASES = I18n.t(:greeting).freeze
+  HELLO_PHRASES = I18n.t(:HELLO).freeze
 
   ASK_PHRASES = {
     name: 'Enter your name',
@@ -20,7 +20,7 @@ RSpec.describe Account do
     age: 'Enter your age'
   }.freeze
 
-  CREATE_CARD_PHRASES = I18n.t 'account.create_card'
+  CREATE_CARD_PHRASES = I18n.t 'CARDS.create_card'
 
   ACCOUNT_VALIDATION_PHRASES = {
     name: {
@@ -52,7 +52,7 @@ RSpec.describe Account do
     tax_higher: 'Your tax is higher than input amount'
   }.freeze
 
-  MAIN_OPERATIONS_TEXTS = I18n.t 'account.main_menu', name: name
+  MAIN_OPERATIONS_TEXTS = I18n.t :MAIN_MENU, name: name
 
   CARDS = {
     usual: {
@@ -341,7 +341,7 @@ RSpec.describe Account do
         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return('SC', 'exit')
         current_subject.instance_variable_set(:@current_account, instance_double('Account', name: name))
         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return('SC', 'exit')
-        expect { current_subject.main_menu }.to output(/#{I18n.t('account.main_menu', name: name)}/).to_stdout
+        expect { current_subject.main_menu }.to output(/#{I18n.t(:MAIN_MENU, name: name)}/).to_stdout
       end
     end
 
@@ -381,6 +381,10 @@ RSpec.describe Account do
 
     after do
       File.delete(OVERRIDABLE_FILENAME) if File.exist?(OVERRIDABLE_FILENAME)
+    end
+
+    before do
+      allow(current_subject).to receive(:exit)
     end
 
     it 'with correct outout' do

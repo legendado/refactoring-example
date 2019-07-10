@@ -114,7 +114,7 @@ class Navigator
   end
 
   def without_self
-    accounts.select { |account| account if account != @current_account }
+    accounts.select { |account| account if account.login != @current_account.login }
   end
 
   def show_account_error
