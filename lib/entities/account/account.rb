@@ -13,4 +13,8 @@ class Account
     @password = args[:password]
     @cards = []
   end
+
+  def ==(other)
+    self.login == other.login
+  end
 end

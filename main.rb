@@ -1,7 +1,3 @@
-require_relative 'account'
+require_relative 'autoload'
 
-Account.new.console
-
-# require_relative 'autoload'
-
-# Navigator.new.console
+Navigator.new.console

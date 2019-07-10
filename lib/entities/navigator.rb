@@ -83,7 +83,10 @@ class Navigator
 
   # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
 
-  def destroy_account; end
+  def destroy_account
+    save_accounts without_self if confirm?
+    exit
+  end
 
   def withdraw_money; end
 
@@ -104,6 +107,15 @@ class Navigator
   end
 
   private
+
+  def confirm?
+    puts I18n.t('COMMON.destroy_account')
+    gets.chomp == YES
+  end
+
+  def without_self
+    accounts.select { |account| account if account != @current_account }
+  end
 
   def show_account_error
     puts I18n.t 'ERROR.user_not_exists'
