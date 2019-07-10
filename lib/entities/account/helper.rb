@@ -9,7 +9,7 @@ module Helper
   end
 
   def show(*messages)
-    puts *messages
+    puts(*messages)
   end
 
   def update_database
@@ -28,17 +28,17 @@ module Helper
     (index.to_i - 1).between? 0, cards.size - 1
   end
 
-  def get_cards
-    cards.map { |card| I18n.t('output.cards.card', number: card.number, type: card.type) }
+  def take_cards
+    cards.map { |card| I18n.t('CARDS.card', number: card.number, type: card.type) }
   end
 
   def cards_with_index
     cards.map.with_index do |card, index|
-      I18n.t('output.card_with_index', number: card.number, type: card.type, index: index + 1)
+      I18n.t('CARDS.card_with_index', number: card.number, type: card.type, index: index + 1)
     end
   end
 
-  def get_card(index)
+  def take_card(index)
     cards[index]
   end
 end

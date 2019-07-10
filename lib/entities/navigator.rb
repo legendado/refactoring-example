@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 class Navigator
   include Validation
   include Database
@@ -64,6 +65,7 @@ class Navigator
     end
   end
 
+  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
   def main_menu
     loop do
       case menu(@current_account.name)
@@ -78,6 +80,8 @@ class Navigator
       end
     end
   end
+
+  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
 
   def destroy_account; end
 
@@ -102,7 +106,7 @@ class Navigator
   private
 
   def show_account_error
-    puts I18n.t 'errors.account_finded'
+    puts I18n.t 'ERROR.user_not_exists'
   end
 
   def find_account(data)
@@ -134,3 +138,4 @@ class Navigator
     @errors = []
   end
 end
+# rubocop:enable Metrics/ClassLength

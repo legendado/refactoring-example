@@ -13,13 +13,6 @@ RSpec.describe Account do
 
   HELLO_PHRASES = I18n.t(:greeting).freeze
 
-  # HELLO_PHRASES = [
-  #   'Hello, we are RubyG bank!',
-  #   '- If you want to create account - press `create`',
-  #   '- If you want to load account - press `load`',
-  #   '- If you want to exit - press `exit`'
-  # ].freeze
-
   ASK_PHRASES = {
     name: 'Enter your name',
     login: 'Enter your login',
@@ -27,18 +20,7 @@ RSpec.describe Account do
     age: 'Enter your age'
   }.freeze
 
-  # rubocop:disable Metrics/LineLength
   CREATE_CARD_PHRASES = I18n.t 'account.create_card'
-
-  # CREATE_CARD_PHRASES = [
-  #   'You could create one of 3 card types',
-  #   '- Usual card. 2% tax on card INCOME. 20$ tax on SENDING money from this card. 5% tax on WITHDRAWING money. For creation this card - press `usual`',
-  #   '- Capitalist card. 10$ tax on card INCOME. 10% tax on SENDING money from this card. 4$ tax on WITHDRAWING money. For creation this card - press `capitalist`',
-  #   '- Virtual card. 1$ tax on card INCOME. 1$ tax on SENDING money from this card. 12% tax on WITHDRAWING money. For creation this card - press `virtual`',
-  #   '- For exit - press `exit`'
-  # ].freeze
-
-  # rubocop:enable Metrics/LineLength
 
   ACCOUNT_VALIDATION_PHRASES = {
     name: {
@@ -71,17 +53,6 @@ RSpec.describe Account do
   }.freeze
 
   MAIN_OPERATIONS_TEXTS = I18n.t 'account.main_menu', name: name
-
-  # MAIN_OPERATIONS_TEXTS = [
-  #   'If you want to:',
-  #   '- show all cards - press SC',
-  #   '- create card - press CC',
-  #   '- destroy card - press DC',
-  #   '- put money on card - press PM',
-  #   '- withdraw money on card - press WM',
-  #   '- destroy account - press `DA`',
-  #   '- exit from account - press `exit`'
-  # ].freeze
 
   CARDS = {
     usual: {
@@ -452,7 +423,7 @@ RSpec.describe Account do
     after { test_account.show_cards }
 
     it 'display cards if there are any' do
-      allow(test_account).to receive(:get_cards).and_return(cards)
+      allow(test_account).to receive(:take_cards).and_return(cards)
       expect(test_account).to receive(:show).with(cards)
     end
 

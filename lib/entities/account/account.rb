@@ -1,12 +1,16 @@
-class Account < Struct.new(:name, :age, :login, :password)
+class Account
   include Helper
   include CardsAction
   include Money
 
+  attr_reader :name, :age, :login, :password
   attr_accessor :cards
 
   def initialize(args)
-    super(args[:name], args[:age], args[:login], args[:password])
+    @name = args[:name]
+    @age = args[:age]
+    @login = args[:login]
+    @password = args[:password]
     @cards = []
   end
 end

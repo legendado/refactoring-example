@@ -11,7 +11,7 @@ module CardsAction
   }.freeze
 
   def create_card
-    type = get_type
+    type = take_type
     return if type == COMMANDS[:exit]
 
     add_new_card type
@@ -19,13 +19,13 @@ module CardsAction
   end
 
   def show_cards
-    cards.any? ? show(get_cards) : show(I18n.t('errors.cards'))
+    cards.any? ? show(take_cards) : show(I18n.t('ERROR.no_active_cards'))
   end
 
   def destroy_card
-    return show(I18n.t('errors.cards')) unless cards.any?
+    return show(I18n.t('ERROR.no_active_cards')) unless cards.any?
 
-    index = get_card_index
+    index = take_card_index
     return if index == COMMANDS[:exit]
 
     delete_card index.to_i if accept? index.to_i
@@ -34,17 +34,17 @@ module CardsAction
   private
 
   def accept?(index)
-    puts I18n.t 'output.cards.accept', number: cards[index - 1].number
+    puts I18n.t 'CARDS.confirm_deletion', number: cards[index - 1].number
     gets.chomp == COMMANDS[:yes]
   end
 
-  def get_card_index
+  def take_card_index
     loop do
-      show(I18n.t('output.cards.want_delete'), cards_with_index, I18n.t('output.exit'))
+      show(I18n.t('COMMON.if_you_want_to_delete'), cards_with_index, I18n.t(:EXIT))
       index = gets.chomp
       break index if index_valid? index
 
-      show I18n.t('errors.wrong_number')
+      show I18n.t('ERROR.wrong_number')
     end
   end
 
@@ -57,12 +57,12 @@ module CardsAction
     TYPES.values.include? type
   end
 
-  def get_type
+  def take_type
     loop do
-      type = from_input(I18n.t('account.create_card'))
+      type = from_input(I18n.t('CARDS.create_card'))
       break type if type_valid? type
 
-      show I18n.t('errors.card_type')
+      show I18n.t('ERROR.wrong_card_type')
     end
   end
 

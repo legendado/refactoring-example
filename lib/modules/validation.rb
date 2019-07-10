@@ -15,24 +15,26 @@ module Validation
   end
 
   def validate_name(name)
-    @errors << I18n.t('errors.name_error') if name.empty? || !name[0].match?(/[A-Z]/)
+    @errors << I18n.t('VALIDATION.name.first_letter') if name.empty? || !name[0].match?(/[A-Z]/)
   end
 
   def validate_age(age)
-    @errors << I18n.t('errors.age_error') unless VALID[:age].include? age.to_i
+    @errors << I18n.t('VALIDATION.age.length') unless VALID[:age].include? age.to_i
   end
 
+  # rubocop:disable Metrics/AbcSize
   def validate_login(login)
-    @errors << I18n.t('errors.login_error_empty') if login.empty?
-    @errors << I18n.t('errors.login_error_min') if login.size < VALID[:login].first
-    @errors << I18n.t('errors.login_error_max') if login.size > VALID[:login].last
-    @errors << I18n.t('errors.login_error_exists') if account_exist? login
+    @errors << I18n.t('VALIDATION.login.present') if login.empty?
+    @errors << I18n.t('VALIDATION.login.longer') if login.size < VALID[:login].first
+    @errors << I18n.t('VALIDATION.login.shorter') if login.size > VALID[:login].last
+    @errors << I18n.t('VALIDATION.login.exists') if account_exist? login
   end
+  # rubocop:enable Metrics/AbcSize
 
   def validate_password(password)
-    @errors << I18n.t('errors.password_error_empty') if password.empty?
-    @errors << I18n.t('errors.password_error_min') if password.size < VALID[:password].first
-    @errors << I18n.t('errors.password_error_max') if password.size > VALID[:password].last
+    @errors << I18n.t('VALIDATION.password.present') if password.empty?
+    @errors << I18n.t('VALIDATION.password.longer') if password.size < VALID[:password].first
+    @errors << I18n.t('VALIDATION.password.shorter') if password.size > VALID[:password].last
   end
 
   def account_exist?(login)
