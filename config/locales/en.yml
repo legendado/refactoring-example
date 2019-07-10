@@ -12,7 +12,7 @@ en:
       want_delete: 'If you want to delete:'
     money:
       choose: 'Choose the card for putting:'
-      amount: 'Input the amount of money you want to put on your card'   
+      amount: 'Input the amount of money you want to put on your card'
       put_result: "Money %{amount} was put on %{number}. Balance: %{balance}. Tax: %{tax}"   
   account: 
     create_card: "You could create one of 3 card types

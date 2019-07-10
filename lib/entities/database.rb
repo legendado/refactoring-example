@@ -1,7 +1,7 @@
 module Database
-  def path file_path = 'accounts.yml'
+  def path(file_path = 'accounts.yml')
     file_path
-  end    
+  end
 
   def load_account
     File.exist?(path) ? YAML.load_file(path) : []

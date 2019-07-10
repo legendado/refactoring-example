@@ -25,7 +25,7 @@ module CardsAction
   def destroy_card
     return show(I18n.t('errors.cards')) unless cards.any?
 
-    index = get_index
+    index = get_card_index
     return if index == COMMANDS[:exit]
 
     delete_card index.to_i if accept? index.to_i
@@ -38,9 +38,9 @@ module CardsAction
     gets.chomp == COMMANDS[:yes]
   end
 
-  def get_index
+  def get_card_index
     loop do
-      show I18n.t('output.cards.want_delete'), cards_with_index, I18n.t('output.exit')
+      show(I18n.t('output.cards.want_delete'), cards_with_index, I18n.t('output.exit'))
       index = gets.chomp
       break index if index_valid? index
 

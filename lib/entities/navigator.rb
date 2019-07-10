@@ -105,7 +105,7 @@ class Navigator
     puts I18n.t 'errors.account_finded'
   end
 
-  def find_account data
+  def find_account(data)
     accounts.detect { |account| account.login == data[:login] && account.password == data[:password] }
   end
 

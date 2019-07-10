@@ -9,7 +9,7 @@ module Helper
   end
 
   def show(*messages)
-    messages.each { |message| puts message }
+    puts *messages
   end
 
   def update_database
