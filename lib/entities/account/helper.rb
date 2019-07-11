@@ -38,7 +38,7 @@ module Helper
     end
   end
 
-  def take_card(index)
+  def selected_card(index)
     cards[index]
   end
 end

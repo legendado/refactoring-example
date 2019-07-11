@@ -581,7 +581,7 @@ RSpec.describe Account do
     let(:card_one) { CapitalistCard.new }
     let(:card_two) { CapitalistCard.new }
     let(:fake_cards) { [card_one, card_two] }
-    let(:current_subject) { test_account }
+    let(:current_subject) { test_account }    
 
     context 'without cards' do
       it 'shows message about not active cards' do
@@ -638,6 +638,7 @@ RSpec.describe Account do
         before do
           current_subject.instance_variable_set(:@cards, fake_cards)
           allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
+          allow(current_subject).to receive(:path).and_return(OVERRIDABLE_FILENAME)
         end
 
         context 'with correct output' do
@@ -677,14 +678,12 @@ RSpec.describe Account do
               custom_cards.each do |custom_card|
                 allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
                 allow(current_subject).to receive(:accounts) { [test_account] }
-                current_subject.instance_variable_set(:@cards, [custom_card, card_one, card_two])
-                allow(current_subject).to receive(:path).and_return(OVERRIDABLE_FILENAME)
+                current_subject.instance_variable_set(:@cards, [custom_card, card_one, card_two])                
                 new_balance = custom_card.balance + correct_money_amount_greater_than_tax * (1 - custom_card.put_tax)
 
                 expect { current_subject.put_money }.to output(
                   /Money #{correct_money_amount_greater_than_tax} was put on #{custom_card.number}. Balance: #{new_balance}. Tax: #{custom_card.put_tax}/
                 ).to_stdout
-
                 expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
                 file_accounts = YAML.load_file(OVERRIDABLE_FILENAME)
                 expect(file_accounts.first.cards.first.balance).to eq(new_balance)
