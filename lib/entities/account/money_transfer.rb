@@ -1,17 +1,40 @@
 module Money
-  def put_money
-    index = choose_card_index
+  TYPES = {
+    put: ['choose_card', 'input_amount'],
+    withdraw: ['choose_card_withdrawing', 'withdraw_amount']
+  }.freeze
+
+  def operation(type)
+    index = choose_card_index(type.first)
     return if index.nil? || index.zero?
 
     card = selected_card(index - 1)
-    amount = enter_amount
+    amount = enter_amount(type.last)
 
     return if invalid_amount? card.put_tax, amount
-
+    
     put_on_card(card, amount)
   end
 
-  def withdraw_money; end
+  def put_money
+    # index = choose_card_index(TYPES[:input])
+    # return if index.nil? || index.zero?
+
+    # card = selected_card(index - 1)
+    # amount = enter_amount(TYPES[:input].first)
+
+    # return if invalid_amount? card.put_tax, amount
+
+    # put_on_card(card, amount)
+  end
+
+  def withdraw_money
+    # index = choose_card_index
+    # return if index.nil? || index.zero?
+
+    # card = selected_card(index - 1)
+    # amount = enter_amount(AMOUNT_TYPES[:input])
+  end
 
   private
 
@@ -27,8 +50,8 @@ module Money
     amount < tax
   end
 
-  def enter_amount
-    amount = from_input(I18n.t('COMMON.input_amount'))
+  def enter_amount(type)
+    amount = from_input(I18n.t("COMMON.#{type}"))
     amount.to_i
   end
 
@@ -38,8 +61,8 @@ module Money
     return false
   end
 
-  def choose_card_index
-    show I18n.t('COMMON.choose_card')
+  def choose_card_index(type)
+    show I18n.t("COMMON.#{type}")
     return show(I18n.t('ERROR.no_active_cards')) unless cards.any?
 
     show cards_with_index, I18n.t(:EXIT)

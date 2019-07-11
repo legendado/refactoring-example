@@ -695,83 +695,85 @@ RSpec.describe Account do
     end
   end
 
-  # describe '#withdraw_money' do
-  #   context 'without cards' do
-  #     it 'shows message about not active cards' do
-  #       current_subject.instance_variable_set(:@current_account, instance_double('Account', card: []))
-  #       expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:no_active_cards]}/).to_stdout
-  #     end
-  #   end
+  describe '#withdraw_money', focus: true do
+    let(:current_subject) { test_account }
 
-  #   context 'with cards' do
-  #     let(:card_one) { { number: 1, type: 'test' } }
-  #     let(:card_two) { { number: 2, type: 'test2' } }
-  #     let(:fake_cards) { [card_one, card_two] }
+    context 'without cards' do
+      it 'shows message about not active cards' do
+        current_subject.instance_variable_set(:@current_account, test_account)
+        expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:no_active_cards]}/).to_stdout
+      end
+    end
 
-  #     context 'with correct outout' do
-  #       it do
-  #         allow(current_subject).to receive(:card) { fake_cards }
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
-  #         expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:choose_card_withdrawing]}/).to_stdout
-  #         fake_cards.each_with_index do |card, i|
-  #           message = /- #{card[:number]}, #{card[:type]}, press #{i + 1}/
-  #           expect { current_subject.withdraw_money }.to output(message).to_stdout
-  #         end
-  #         current_subject.withdraw_money
-  #       end
-  #     end
+    context 'with cards' do
+      let(:card_one) { UsualCard.new }
+      let(:card_two) { CapitalistCard.new }
+      let(:fake_cards) { [card_one, card_two] }
 
-  #     context 'when exit if first gets is exit' do
-  #       it do
-  #         allow(current_subject).to receive(:card) { fake_cards }
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #         expect(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
-  #         current_subject.withdraw_money
-  #       end
-  #     end
+      context 'with correct outout' do
+        it do
+          allow(current_subject).to receive(:cards) { fake_cards }
+          current_subject.instance_variable_set(:@current_account, current_subject)
+          allow(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
+          expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:choose_card_withdrawing]}/).to_stdout
+          fake_cards.each_with_index do |card, i|
+            message = /- #{card.number}, #{card.type}, press #{i + 1}/
+            expect { current_subject.withdraw_money }.to output(message).to_stdout
+          end
+          current_subject.withdraw_money
+        end
+      end
 
-  #     context 'with incorrect input of card number' do
-  #       before do
-  #         allow(current_subject).to receive(:card) { fake_cards }
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #       end
+      context 'when exit if first gets is exit' do
+        it do
+          allow(current_subject).to receive(:cards) { fake_cards }
+          current_subject.instance_variable_set(:@current_account, current_subject)
+          expect(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
+          current_subject.withdraw_money
+        end
+      end
 
-  #       it do
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(fake_cards.length + 1, 'exit')
-  #         expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
-  #       end
+      context 'with incorrect input of card number' do
+        before do
+          allow(current_subject).to receive(:cards) { fake_cards }
+          current_subject.instance_variable_set(:@current_account, current_subject)
+        end
 
-  #       it do
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(-1, 'exit')
-  #         expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
-  #       end
-  #     end
+        it do
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(fake_cards.length + 1, 'exit')
+          expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
+        end
 
-  #     context 'with correct input of card number' do
-  #       let(:card_one) { { number: 1, type: 'capitalist', balance: 50.0 } }
-  #       let(:card_two) { { number: 2, type: 'capitalist', balance: 100.0 } }
-  #       let(:fake_cards) { [card_one, card_two] }
-  #       let(:chosen_card_number) { 1 }
-  #       let(:incorrect_money_amount) { -2 }
-  #       let(:default_balance) { 50.0 }
-  #       let(:correct_money_amount_lower_than_tax) { 5 }
-  #       let(:correct_money_amount_greater_than_tax) { 50 }
+        it do
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(-1, 'exit')
+          expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
+        end
+      end
 
-  #       before do
-  #         current_subject.instance_variable_set(:@card, fake_cards)
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
-  #       end
+      context 'with correct input of card number' do
+        let(:card_one) { CapitalistCard.new }
+        let(:card_two) { CapitalistCard.new.balance = 100.00 }
+        let(:fake_cards) { [card_one, card_two] }
+        let(:chosen_card_number) { 1 }
+        let(:incorrect_money_amount) { -2 }
+        let(:default_balance) { 50.0 }
+        let(:correct_money_amount_lower_than_tax) { 5 }
+        let(:correct_money_amount_greater_than_tax) { 50 }
 
-  #       context 'with correct output' do
-  #         let(:commands) { [chosen_card_number, incorrect_money_amount] }
+        before do
+          current_subject.instance_variable_set(:@cards, fake_cards)
+          current_subject.instance_variable_set(:@current_account, current_subject)
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
+        end
 
-  #         it do
-  #           expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:withdraw_amount]}/).to_stdout
-  #         end
-  #       end
-  #     end
-  #   end
-  # end
+        context 'with correct output' do
+          let(:commands) { [chosen_card_number, incorrect_money_amount] }
+
+          it do
+            expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:withdraw_amount]}/).to_stdout
+          end
+        end
+      end
+    end
+  end
 end
