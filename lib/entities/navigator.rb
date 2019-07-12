@@ -88,7 +88,9 @@ class Navigator
     exit
   end
 
-  def withdraw_money; end
+  def withdraw_money
+    @current_account.withdraw_money
+  end
 
   def put_money
     @current_account.put_money

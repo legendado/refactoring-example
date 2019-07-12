@@ -47,6 +47,7 @@ en:
     wrong_number: "You entered wrong number!\n"
     correct_amount: 'You must input correct amount of money'
     tax_higher: 'Your tax is higher than input amount'
+    not_enough: "You don't have enough money on card for such operation" 
   MAIN_MENU: "\nWelcome, %{name}
       \nIf you want to:
       \n- show all cards - press SC
@@ -59,5 +60,6 @@ en:
       \n- exit from account - press `exit`"
   EXIT: "press `exit` to exit\n"
   MONEY:
-    result_of_put: "Money %{amount} was put on %{number}. Balance: %{balance}. Tax: %{tax}" 
+    put: "Money %{amount} was put on %{number}. Balance: %{balance}. Tax: %{tax}" 
+    withdraw: "Money %{amount} withdrawed from %{number}. Money left: %{balance}$. Tax %{tax}$"
   
