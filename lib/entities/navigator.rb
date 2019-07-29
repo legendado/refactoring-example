@@ -65,7 +65,6 @@ class Navigator
     end
   end
 
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
   def main_menu
     loop do
       case menu(@current_account.name)
