@@ -69,11 +69,11 @@ RSpec.describe Account do
     }
   }.freeze
 
-  let(:current_subject) { Navigator.new }
+  let(:current_subject) { Console.new }
   let(:test_account) { described_class.new(name: 'Alex', age: '33', login: 'test1', password: '123456') }
   let(:name) { 'Test' }
 
-  describe '#console' do
+  describe '#console', focus: true do
     context 'when correct method calling' do
       after do
         current_subject.console
@@ -105,12 +105,16 @@ RSpec.describe Account do
     end
   end
 
-  describe '#create' do
+  describe '#create', focus: true do
     let(:success_name_input) { 'Denis' }
     let(:success_age_input) { '72' }
     let(:success_login_input) { 'Denis' }
     let(:success_password_input) { 'Denis1993' }
     let(:success_inputs) { [success_name_input, success_age_input, success_login_input, success_password_input] }
+
+    before do
+      allow(Database).to receive(:path).and_return(OVERRIDABLE_FILENAME)
+    end
 
     context 'with success result' do
       before do
@@ -133,7 +137,6 @@ RSpec.describe Account do
       end
 
       it 'write to file Account instance' do
-        allow(current_subject).to receive(:path).and_return(OVERRIDABLE_FILENAME)
         current_subject.create
         expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
         accounts = YAML.load_file(OVERRIDABLE_FILENAME)
@@ -242,7 +245,7 @@ RSpec.describe Account do
     end
   end
 
-  describe '#load' do
+  describe '#load', focus: true do
     before do
       allow(current_subject).to receive(:loop).and_yield
     end
@@ -256,13 +259,12 @@ RSpec.describe Account do
     end
 
     context 'with active accounts' do
-      let(:valid_account) { instance_double('Account', login: login, password: password) }
-      let(:login) { 'Johnny' }
-      let(:password) { 'johnny1' }
+      let(:login) { 'test1' }
+      let(:password) { '123456' }
 
       before do
         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*all_inputs)
-        allow(current_subject).to receive(:accounts) { [valid_account] }
+        allow(current_subject).to receive(:accounts) { [test_account] }
       end
 
       context 'with correct outout' do
@@ -297,7 +299,7 @@ RSpec.describe Account do
     end
   end
 
-  describe '#create_first_account' do
+  describe '#create_first_account', focus: true do
     let(:cancel_input) { 'sdfsdfs' }
     let(:success_input) { 'y' }
 
@@ -320,7 +322,7 @@ RSpec.describe Account do
     end
   end
 
-  describe '#main_menu' do
+  describe '#main_menu', focus: true do
     let(:name) { 'John' }
     let(:commands) do
       {
@@ -368,15 +370,15 @@ RSpec.describe Account do
     end
   end
 
-  describe '#destroy_account' do
+  describe '#destroy_account', focus: true do
     let(:cancel_input) { 'sdfsdfs' }
     let(:success_input) { 'y' }
     let(:correct_login) { 'test' }
     let(:fake_login) { 'test1' }
     let(:fake_login2) { 'test2' }
-    let(:correct_account) { instance_double('Account', login: correct_login) }
-    let(:fake_account) { instance_double('Account', login: fake_login) }
-    let(:fake_account2) { instance_double('Account', login: fake_login2) }
+    let(:correct_account) { instance_double(Account.new, login: correct_login) }
+    let(:fake_account) { instance_double(Account.new, login: fake_login) }
+    let(:fake_account2) { instance_double(Account.new, login: fake_login2) }
     let(:accounts) { [correct_account, fake_account, fake_account2] }
 
     after do
@@ -396,9 +398,9 @@ RSpec.describe Account do
       it 'deletes account if user inputs is y' do
         expect(current_subject).to receive_message_chain(:gets, :chomp) { success_input }
         expect(current_subject).to receive(:accounts) { accounts }
-        allow(current_subject).to receive(:path).and_return(OVERRIDABLE_FILENAME)
+        allow(Database).to receive(:path).and_return(OVERRIDABLE_FILENAME)
         current_subject.instance_variable_set(:@current_account, instance_double('Account', login: correct_login))
-
+        
         current_subject.destroy_account
 
         expect(File.exist?(OVERRIDABLE_FILENAME)).to be true

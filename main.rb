@@ -1,3 +1,3 @@
 require_relative 'autoload'
 
-Navigator.new.console
+Console.new.console
