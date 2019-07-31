@@ -12,6 +12,6 @@ class VirtualCard < Card
   end
 
   def withdraw_tax
-    0.88
+    0.12
   end
 end

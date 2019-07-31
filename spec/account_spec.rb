@@ -49,7 +49,8 @@ RSpec.describe Account do
     wrong_card_type: "Wrong card type. Try again!\n",
     wrong_number: "You entered wrong number!\n",
     correct_amount: 'You must input correct amount of money',
-    tax_higher: 'Your tax is higher than input amount'
+    tax_higher: 'Your tax is higher than input amount',
+    not_enough: "You don't have enough money on card for such operation"
   }.freeze
 
   MAIN_OPERATIONS_TEXTS = I18n.t :MAIN_MENU, name: name
@@ -587,199 +588,249 @@ RSpec.describe Account do
     end
   end
 
-  # describe '#put_money' do
-  #   let(:card_one) { CapitalistCard.new }
-  #   let(:card_two) { CapitalistCard.new }
-  #   let(:fake_cards) { [card_one, card_two] }
-  #   let(:current_subject) { test_account }
+  describe '#put_money' do
+    let(:card_one) { CapitalistCard.new }
+    let(:card_two) { CapitalistCard.new }
+    let(:fake_cards) { [card_one, card_two] }
 
-  #   context 'without cards' do
-  #     it 'shows message about not active cards' do
-  #       current_subject.instance_variable_set(:@current_account, test_account)
-  #       expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:no_active_cards]}/).to_stdout
-  #     end
-  #   end
+    before do
+      current_subject.instance_variable_set(:@current_account, test_account)
+    end
 
-  #   context 'with cards' do
-  #     context 'with correct outout' do
-  #       it do
-  #         allow(current_subject).to receive(:cards) { fake_cards }
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
-  #         expect { current_subject.put_money }.to output(/#{COMMON_PHRASES[:choose_card]}/).to_stdout
-  #         fake_cards.each_with_index do |card, i|
-  #           message = /- #{card.number}, #{card.type}, press #{i + 1}/
-  #           expect { current_subject.put_money }.to output(message).to_stdout
-  #         end
-  #         current_subject.put_money
-  #       end
-  #     end
+    context 'without cards' do
+      it 'shows message about not active cards' do
+        expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:no_active_cards]}/).to_stdout
+      end
+    end
 
-  #     context 'when exit if first gets is exit' do
-  #       it do
-  #         allow(current_subject).to receive(:cards) { fake_cards }
-  #         expect(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
-  #         current_subject.put_money
-  #       end
-  #     end
+    context 'with cards' do
+      context 'with correct outout' do
+        it do
+          allow(current_subject).to receive(:cards) { fake_cards }
+          allow(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
+          expect { current_subject.put_money }.to output(/#{COMMON_PHRASES[:choose_card]}/).to_stdout
+          fake_cards.each_with_index do |card, i|
+            message = /- #{card.number}, #{card.type}, press #{i + 1}/
+            expect { current_subject.put_money }.to output(message).to_stdout
+          end
+          current_subject.put_money
+        end
+      end
 
-  #     context 'with incorrect input of card number' do
-  #       before do
-  #         allow(current_subject).to receive(:cards) { fake_cards }
-  #       end
+      context 'when exit if first gets is exit' do
+        it do
+          allow(test_account).to receive(:cards) { fake_cards }
+          expect(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
+          current_subject.put_money
+        end
+      end
 
-  #       it do
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(fake_cards.length + 1, 'exit')
-  #         expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
-  #       end
+      context 'with incorrect input of card number' do
+        before do
+          allow(test_account).to receive(:cards) { fake_cards }
+        end
 
-  #       it do
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(-1, 'exit')
-  #         expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
-  #       end
-  #     end
+        it do
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(fake_cards.length + 1, 'exit')
+          expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
+        end
 
-  #     context 'with correct input of card number' do
-  #       let(:chosen_card_number) { 1 }
-  #       let(:incorrect_money_amount) { -2 }
-  #       let(:default_balance) { 50.0 }
-  #       let(:correct_money_amount_lower_than_tax) { 5 }
-  #       let(:correct_money_amount_greater_than_tax) { 50 }
+        it do
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(-1, 'exit')
+          expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
+        end
+      end
 
-  #       before do
-  #         current_subject.instance_variable_set(:@cards, fake_cards)
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
-  #         allow(current_subject).to receive(:path).and_return(OVERRIDABLE_FILENAME)
-  #       end
+      context 'with correct input of card number' do
+        let(:chosen_card_number) { 1 }
+        let(:incorrect_money_amount) { -2 }
+        let(:default_balance) { 50.0 }
+        let(:correct_money_amount_lower_than_tax) { 5 }
+        let(:correct_money_amount_greater_than_tax) { 50 }
 
-  #       context 'with correct output' do
-  #         let(:commands) { [chosen_card_number, incorrect_money_amount] }
+        before do
+          test_account.instance_variable_set(:@cards, fake_cards)
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
+        end
 
-  #         it do
-  #           expect { current_subject.put_money }.to output(/#{COMMON_PHRASES[:input_amount]}/).to_stdout
-  #         end
-  #       end
+        context 'with correct output' do
+          let(:commands) { [chosen_card_number, incorrect_money_amount] }
 
-  #       context 'with amount lower then 0' do
-  #         let(:commands) { [chosen_card_number, incorrect_money_amount] }
+          it do
+            expect { current_subject.put_money }.to output(/#{COMMON_PHRASES[:input_amount]}/).to_stdout
+          end
+        end
 
-  #         it do
-  #           expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:correct_amount]}/).to_stdout
-  #         end
-  #       end
+        context 'with amount lower then 0' do
+          let(:commands) { [chosen_card_number, incorrect_money_amount] }
 
-  #       context 'with amount greater then 0' do
-  #         context 'with tax greater than amount' do
-  #           let(:commands) { [chosen_card_number, correct_money_amount_lower_than_tax] }
+          it do
+            expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:correct_amount]}/).to_stdout
+          end
+        end
 
-  #           it do
-  #             expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:tax_higher]}/).to_stdout
-  #           end
-  #         end
+        context 'with amount greater then 0' do
+          context 'with tax greater than amount' do
+            let(:commands) { [chosen_card_number, correct_money_amount_lower_than_tax] }
 
-  #         context 'with tax lower than amount' do
-  #           let(:custom_cards) { [UsualCard.new, CapitalistCard.new, VirtualCard.new] }
-  #           let(:commands) { [chosen_card_number, correct_money_amount_greater_than_tax] }
+            it do
+              expect { current_subject.put_money }.to output(/#{ERROR_PHRASES[:tax_higher]}/).to_stdout
+            end
+          end
 
-  #           after do
-  #             File.delete(OVERRIDABLE_FILENAME) if File.exist?(OVERRIDABLE_FILENAME)
-  #           end
+          context 'with tax lower than amount' do
+            let(:custom_cards) { [UsualCard.new, CapitalistCard.new, VirtualCard.new] }
+            let(:commands) { [chosen_card_number, correct_money_amount_greater_than_tax] }
 
-  #           it do
-  #             custom_cards.each do |custom_card|
-  #               allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
-  #               allow(current_subject).to receive(:accounts) { [test_account] }
-  #               current_subject.instance_variable_set(:@cards, [custom_card, card_one, card_two])
-  #               new_balance = custom_card.balance + correct_money_amount_greater_than_tax * (1 - custom_card.put_tax)
+            after do
+              File.delete(OVERRIDABLE_FILENAME) if File.exist?(OVERRIDABLE_FILENAME)
+            end
 
-  #               expect { current_subject.put_money }.to output(
-  #                 /Money #{correct_money_amount_greater_than_tax} was put on #{custom_card.number}. Balance: #{new_balance}. Tax: #{correct_money_amount_greater_than_tax * custom_card.put_tax}/
-  #               ).to_stdout
-  #               expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
-  #               file_accounts = YAML.load_file(OVERRIDABLE_FILENAME)
-  #               expect(file_accounts.first.cards.first.balance).to eq(new_balance)
-  #             end
-  #           end
-  #         end
-  #       end
-  #     end
-  #   end
-  # end
+            it do
+              custom_cards.each do |custom_card|
+                allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
+                allow(current_subject).to receive(:accounts) { [test_account] }
+                allow(Database).to receive(:path).and_return(OVERRIDABLE_FILENAME)
+                test_account.instance_variable_set(:@cards, [custom_card, card_one, card_two])
 
-  # describe '#withdraw_money' do
-  #   let(:current_subject) { test_account }
+                amount_with_tax = custom_card.put_tax < 1 ? correct_money_amount_greater_than_tax * (1 - custom_card.put_tax) : correct_money_amount_greater_than_tax - custom_card.put_tax
+                new_balance = custom_card.balance + amount_with_tax
 
-  #   context 'without cards' do
-  #     it 'shows message about not active cards' do
-  #       current_subject.instance_variable_set(:@current_account, test_account)
-  #       expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:no_active_cards]}/).to_stdout
-  #     end
-  #   end
+                expect { current_subject.put_money }.to output(
+                  /Money #{correct_money_amount_greater_than_tax} was put on #{custom_card.number}. Balance: #{new_balance}. Tax: #{custom_card.put_tax}/
+                ).to_stdout
+                expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
+                file_accounts = YAML.load_file(OVERRIDABLE_FILENAME)
+                expect(file_accounts.first.cards.first.balance).to eq(new_balance)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 
-  #   context 'with cards' do
-  #     let(:card_one) { UsualCard.new }
-  #     let(:card_two) { CapitalistCard.new }
-  #     let(:fake_cards) { [card_one, card_two] }
+  describe '#withdraw_money' do
+    before do
+      current_subject.instance_variable_set(:@current_account, test_account)
+    end
 
-  #     context 'with correct outout' do
-  #       it do
-  #         allow(current_subject).to receive(:cards) { fake_cards }
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
-  #         expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:choose_card_withdrawing]}/).to_stdout
-  #         fake_cards.each_with_index do |card, i|
-  #           message = /- #{card.number}, #{card.type}, press #{i + 1}/
-  #           expect { current_subject.withdraw_money }.to output(message).to_stdout
-  #         end
-  #         current_subject.withdraw_money
-  #       end
-  #     end
+    context 'without cards' do
+      it 'shows message about not active cards' do
+        expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:no_active_cards]}/).to_stdout
+      end
+    end
 
-  #     context 'when exit if first gets is exit' do
-  #       it do
-  #         allow(current_subject).to receive(:cards) { fake_cards }
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #         expect(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
-  #         current_subject.withdraw_money
-  #       end
-  #     end
+    context 'with cards' do
+      let(:card_one) { UsualCard.new }
+      let(:card_two) { CapitalistCard.new }
+      let(:fake_cards) { [card_one, card_two] }
 
-  #     context 'with incorrect input of card number' do
-  #       before do
-  #         allow(current_subject).to receive(:cards) { fake_cards }
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #       end
+      context 'with correct outout' do
+        it do
+          allow(current_subject).to receive(:cards) { fake_cards }
+          allow(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
+          expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:choose_card_withdrawing]}/).to_stdout
+          fake_cards.each_with_index do |card, i|
+            message = /- #{card.number}, #{card.type}, press #{i + 1}/
+            expect { current_subject.withdraw_money }.to output(message).to_stdout
+          end
+          current_subject.withdraw_money
+        end
+      end
 
-  #       it do
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(fake_cards.length + 1, 'exit')
-  #         expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
-  #       end
+      context 'when exit if first gets is exit' do
+        it do
+          allow(current_subject).to receive(:cards) { fake_cards }
+          current_subject.instance_variable_set(:@current_account, current_subject)
+          expect(current_subject).to receive_message_chain(:gets, :chomp) { 'exit' }
+          current_subject.withdraw_money
+        end
+      end
 
-  #       it do
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(-1, 'exit')
-  #         expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
-  #       end
-  #     end
+      context 'with incorrect input of card number' do
+        before do
+          allow(current_subject).to receive(:cards) { fake_cards }
+        end
 
-  #     context 'with correct input of card number' do
-  #       let(:fake_cards) { [UsualCard.new, CapitalistCard.new, VirtualCard.new] }
-  #       let(:chosen_card_number) { 1 }
-  #       let(:incorrect_money_amount) { -2 }
-  #       let(:correct_money_amount) { 1 }
+        it do
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(fake_cards.length + 1, 'exit')
+          expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
+        end
 
-  #       before do
-  #         current_subject.instance_variable_set(:@cards, fake_cards)
-  #         current_subject.instance_variable_set(:@current_account, current_subject)
-  #         allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
-  #       end
+        it do
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(-1, 'exit')
+          expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:wrong_number]}/).to_stdout
+        end
+      end
 
-  #       context 'with correct output' do
-  #         let(:commands) { [chosen_card_number, incorrect_money_amount] }
+      context 'with correct input of card number' do
+        let(:fake_cards) { [UsualCard.new, CapitalistCard.new, VirtualCard.new] }
+        let(:chosen_card_number) { 1 }
+        let(:incorrect_money_amount) { -2 }
+        let(:correct_money_amount) { 1 }
+        let(:amount_greater_then_balance) { 200 }
 
-  #         it do
-  #           expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:withdraw_amount]}/).to_stdout
-  #         end
-  #       end
-  #     end
-  #   end
-  # end
+        before do
+          test_account.instance_variable_set(:@cards, fake_cards)
+          allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
+        end
+
+        context 'with correct output' do
+          let(:commands) { [chosen_card_number, incorrect_money_amount] }
+
+          it do
+            expect { current_subject.withdraw_money }.to output(/#{COMMON_PHRASES[:withdraw_amount]}/).to_stdout
+          end
+        end
+
+        # added
+
+        context 'with amount lower then 0' do
+          let(:commands) { [chosen_card_number, incorrect_money_amount] }
+
+          it do
+            expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:correct_amount]}/).to_stdout
+          end
+        end
+
+        context 'with amount greater then 0' do
+          context 'with amount greater then card balance' do
+            let(:commands) { [chosen_card_number, amount_greater_then_balance] }
+
+            it do
+              expect { current_subject.withdraw_money }.to output(/#{ERROR_PHRASES[:not_enough]}/).to_stdout
+            end
+          end
+
+          context 'with correct money amount' do
+            let(:custom_cards) { [UsualCard.new, CapitalistCard.new, VirtualCard.new] }
+            let(:commands) { [chosen_card_number, correct_money_amount] }
+
+            after do
+              File.delete(OVERRIDABLE_FILENAME) if File.exist?(OVERRIDABLE_FILENAME)
+            end
+
+            it do
+              custom_cards.each do |custom_card|
+                allow(current_subject).to receive_message_chain(:gets, :chomp).and_return(*commands)
+                allow(current_subject).to receive(:accounts) { [test_account] }
+                allow(Database).to receive(:path).and_return(OVERRIDABLE_FILENAME)
+                test_account.instance_variable_set(:@cards, [custom_card, card_one, card_two])
+
+                new_balance = custom_card.balance - correct_money_amount * (1 + custom_card.withdraw_tax)
+
+                expect { current_subject.withdraw_money }.to output(
+                  /Money #{correct_money_amount} withdrawed from #{custom_card.number}. Money left: #{new_balance}/
+                ).to_stdout
+                expect(File.exist?(OVERRIDABLE_FILENAME)).to be true
+                file_accounts = YAML.load_file(OVERRIDABLE_FILENAME)
+                expect(file_accounts.first.cards.first.balance).to eq(new_balance)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 end
