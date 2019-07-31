@@ -14,14 +14,14 @@ class Account
   end
 
   def not_equal?(other)
-    self.login != other.login
+    login != other.login
   end
 
-  def create_card(card)
+  def add_card(card)
     @cards << card
   end
 
-  def destroy_card(index)
+  def delete_card(index)
     @cards.delete_at(index)
   end
 end

@@ -7,7 +7,7 @@ module UI
   def show(*messages)
     puts(*messages)
   end
-  
+
   def run
     puts I18n.t :HELLO
     gets.chomp
@@ -49,16 +49,16 @@ module UI
 
   def set_account_info
     {
-      name:     set_name,
-      age:      set_age,
-      login:    set_login,
+      name: set_name,
+      age: set_age,
+      login: set_login,
       password: set_password
     }
   end
 
   def set_credentials
     {
-      login:    set_login,
+      login: set_login,
       password: set_password
     }
   end
@@ -71,4 +71,48 @@ module UI
     puts I18n.t('COMMON.destroy_account')
     gets.chomp == 'y'
   end
+
+  # create card
+  def take_type
+    loop do
+      type = from_input(I18n.t('CARDS.create_card'))
+      break type if type_valid? type.downcase
+
+      show I18n.t('ERROR.wrong_card_type')
+    end
+  end
+
+  def type_valid?(type)
+    %w[usual capitalist virtual].include? type
+  end
+  # =============================
+
+  # destroy card
+  def take_card_index
+    loop do
+      show(I18n.t('COMMON.if_you_want_to_delete'), cards_with_index, I18n.t(:EXIT))
+      index = gets.chomp
+      break index if index_valid? index
+
+      show I18n.t('ERROR.wrong_number')
+    end
+  end
+
+  def index_valid?(index)
+    return true if index == 'exit'
+
+    (index.to_i - 1).between? 0, @current_account.cards.size - 1
+  end
+
+  def cards_with_index
+    @current_account.cards.map.with_index do |card, index|
+      I18n.t('CARDS.card_with_index', number: card.number, type: card.type, index: index + 1)
+    end
+  end
+
+  def accept?(index)
+    puts I18n.t 'CARDS.confirm_deletion', number: @current_account.cards[index - 1].number
+    gets.chomp == 'y'
+  end
+  # =============================
 end

@@ -1,4 +1,6 @@
 class Card
+  attr_reader :type, :number, :balance
+
   def initialize(type:, balance:)
     @number   = generate_number
     @type     = type
@@ -16,6 +18,7 @@ class Card
   end
 
   def put_tax; end
+
   def withdraw_tax; end
 
   private

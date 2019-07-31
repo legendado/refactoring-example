@@ -80,7 +80,7 @@ class Navigator
     end
   end
 
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
+  # rubocop:enable
 
   def destroy_account
     save_accounts without_self if confirm?
