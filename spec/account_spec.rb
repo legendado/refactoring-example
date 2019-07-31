@@ -273,7 +273,7 @@ RSpec.describe Account do
         let(:all_inputs) { [login, password] }
 
         it do
-          allow(fake_account).to receive(:equal?).and_return(true)
+          allow(fake_account).to receive(:access?).and_return(true)
           expect(current_subject).to receive(:main_menu)
           [ASK_PHRASES[:login], ASK_PHRASES[:password]].each do |phrase|
             expect(current_subject).to receive(:puts).with(phrase)
@@ -286,7 +286,7 @@ RSpec.describe Account do
         let(:all_inputs) { [login, password] }
 
         it do
-          allow(fake_account).to receive(:equal?).and_return(true)
+          allow(fake_account).to receive(:access?).and_return(true)
           expect(current_subject).to receive(:main_menu)
           expect { current_subject.load }.not_to output(/#{ERROR_PHRASES[:user_not_exists]}/).to_stdout
         end
@@ -296,7 +296,7 @@ RSpec.describe Account do
         let(:all_inputs) { ['test', 'test', login, password] }
 
         it do
-          allow(fake_account).to receive(:equal?).and_return(false)
+          allow(fake_account).to receive(:access?).and_return(false)
           expect(current_subject).to receive(:main_menu)
           expect { current_subject.load }.to output(/#{ERROR_PHRASES[:user_not_exists]}/).to_stdout
         end
@@ -381,9 +381,9 @@ RSpec.describe Account do
     let(:correct_login) { 'test' }
     let(:fake_login) { 'test1' }
     let(:fake_login2) { 'test2' }
-    let(:correct_account) { instance_double('Account', login: correct_login, not_equal?: false) }
-    let(:fake_account) { instance_double('Account', login: fake_login, not_equal?: true) }
-    let(:fake_account2) { instance_double('Account', login: fake_login2, not_equal?: true) }
+    let(:correct_account) { instance_double('Account', login: correct_login, equal?: true) }
+    let(:fake_account) { instance_double('Account', login: fake_login, equal?: false) }
+    let(:fake_account2) { instance_double('Account', login: fake_login2, equal?: false) }
     let(:accounts) { [correct_account, fake_account, fake_account2] }
 
     after do

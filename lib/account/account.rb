@@ -9,12 +9,12 @@ class Account
     @cards    = []
   end
 
-  def equal?(data)
-    @login == data[:login] && @password == data[:password]
+  def access?(credentials)
+    @login == credentials[:login] && @password == credentials[:password]
   end
 
-  def not_equal?(other)
-    login != other.login
+  def equal?(other)
+    @login == other.login
   end
 
   def add_card(card)
