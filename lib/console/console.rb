@@ -26,7 +26,7 @@ class Console
       show_errors
     end
 
-    Database.save accounts << @current_account
+    Database.save(accounts << @current_account)
 
     main_menu
   end
@@ -79,7 +79,7 @@ class Console
 
     @current_account.add_card(make_card(type))
 
-    Database.save updated_accounts
+    Database.save(updated_accounts)
   end
 
   def destroy_card
@@ -93,7 +93,7 @@ class Console
 
     @current_account.delete_card(index.to_i - 1)
 
-    Database.save updated_accounts
+    Database.save(updated_accounts)
   end
 
   def put_money
@@ -154,7 +154,6 @@ class Console
   def put(card, amount)
     card.put(amount)
 
-    # put_result(card, amount)
     operation_result(card: card, amount: amount, type: :put, tax: card.put_tax)
 
     Database.save(updated_accounts)
@@ -162,6 +161,7 @@ class Console
 
   def withdraw(card, amount)
     balance = card.balance - amount * (1 + card.withdraw_tax)
+
     return money_error if balance.negative?
 
     card.withdraw(amount)

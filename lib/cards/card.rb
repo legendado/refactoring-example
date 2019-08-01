@@ -12,9 +12,7 @@ class Card
   end
 
   def withdraw(amount)
-    amount_with_tax = amount * (1 + withdraw_tax)
-
-    @balance -= amount_with_tax if @balance > amount_with_tax
+    @balance -= with_tax(amount) if @balance > with_tax(amount)
   end
 
   def put_tax; end
@@ -25,5 +23,9 @@ class Card
 
   def generate_number
     16.times.map { rand(10) }.join
+  end
+
+  def with_tax(amount)
+    amount * (1 + withdraw_tax)
   end
 end
