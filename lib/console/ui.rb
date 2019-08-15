@@ -95,7 +95,6 @@ module UI
   def take_type
     loop do
       type = enter(I18n.t('CARDS.create_card'))
-
       break type if type_valid?(type.downcase)
 
       show I18n.t('ERROR.wrong_card_type')
@@ -105,9 +104,7 @@ module UI
   def take_card_index
     loop do
       show(I18n.t('COMMON.if_you_want_to_delete'), cards_with_index, I18n.t(:EXIT))
-
       index = gets.chomp
-
       break index if index_valid?(index)
 
       show(I18n.t('ERROR.wrong_number'))
@@ -122,7 +119,6 @@ module UI
 
   def accept?(index)
     puts I18n.t('CARDS.confirm_deletion', number: cards[index - 1].number)
-
     gets.chomp == YES
   end
 end
