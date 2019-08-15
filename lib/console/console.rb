@@ -18,16 +18,13 @@ class Console
   def create
     loop do
       data = set_account_info
-
       validate(data)
-
       break @current_account = Account.new(data) if @errors.empty?
 
       show_errors
     end
 
     Database.save(accounts << @current_account)
-
     main_menu
   end
 
@@ -36,7 +33,6 @@ class Console
       return create_first_account if accounts.none?
 
       account = find_account(set_credentials)
-
       break @current_account = account unless account.nil?
 
       show_account_error
@@ -74,11 +70,9 @@ class Console
 
   def create_card
     type = take_type
-
     return if type == EXIT
 
     @current_account.add_card(make_card(type))
-
     Database.save(updated_accounts)
   end
 
@@ -86,21 +80,16 @@ class Console
     return show(I18n.t('ERROR.no_active_cards')) if cards.empty?
 
     index = take_card_index
-
     return if index == EXIT
-
     return unless accept?(index.to_i)
 
     @current_account.delete_card(index.to_i - 1)
-
     Database.save(updated_accounts)
   end
 
   def put_money
     card, amount = obtain_requisites(OPERATION_TYPES[:put])
-
     return if card.nil?
-
     return tax_error if less_than_tax?(card.put_tax, amount)
 
     put(card, amount)
@@ -108,9 +97,7 @@ class Console
 
   def withdraw_money
     card, amount = obtain_requisites(OPERATION_TYPES[:withdraw])
-
     return if card.nil?
-
     return money_error if money_left(card, amount).negative?
 
     withdraw(card, amount)
@@ -118,7 +105,6 @@ class Console
 
   def destroy_account
     Database.save(without_self) if confirm?
-
     exit
   end
 
@@ -140,12 +126,10 @@ class Console
 
   def obtain_requisites(type)
     index = choose_card_index(type.first)
-
     return if index.nil? || index.zero?
 
     card    = selected_card(index - 1)
     amount  = enter_amount(type.last)
-
     return amount_error if amount <= 0
 
     [card, amount]
@@ -153,21 +137,16 @@ class Console
 
   def put(card, amount)
     card.put(amount)
-
     operation_result(card: card, amount: amount, type: :put, tax: card.put_tax)
-
     Database.save(updated_accounts)
   end
 
   def withdraw(card, amount)
     balance = card.balance - amount * (1 + card.withdraw_tax)
-
     return money_error if balance.negative?
 
     card.withdraw(amount)
-
     operation_result(card: card, amount: amount, type: :withdraw, tax: calculate_withdraw_tax(card, amount))
-
     Database.save(updated_accounts)
   end
 
@@ -177,13 +156,10 @@ class Console
 
   def choose_card_index(type)
     show(I18n.t("COMMON.#{type}"))
-
     return show(I18n.t('ERROR.no_active_cards')) unless cards.any?
 
     show(cards_with_index, I18n.t(:EXIT))
-
     index = choose_index
-
     index.to_i
   end
 
